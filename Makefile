@@ -1,5 +1,3 @@
-#did you get the change?
-
 CC = gcc
 CFLAGS = -O2 -Wall -I ../../../../../include -I .
 CFLAGS2 = ../../../../../src/csapp.o -lpthread 
