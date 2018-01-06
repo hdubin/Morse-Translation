@@ -2,11 +2,12 @@
 
 int main() 
 {
-  char *buf;// *p;
+  char *buf, buff[MAXLINE];// *p;
   char arg1[MAXLINE], content[MAXLINE], command[MAXLINE];
   int clientfd;
   char *host, *port;//, *buf2 , *buf[MAXLINE];
   rio_t rio;
+  char *newline = "\r\n";
   /* Extract the argument of the phrase */
   if ((buf = getenv("QUERY_STRING")) != NULL) {
     strcpy(arg1, buf);
@@ -28,12 +29,17 @@ int main()
   sprintf(content, "%sThanks for visiting!\r\n", content);
   sprintf(content, "%sHere is the argument you typed:%s\n", content, buf);
   /* Generate the HTTP response */
-  sprintf(command, "GET http://api.funtranslations.com/translate/morse.json%s", arg1);
+  sprintf(command, "GET /translate/morse.json%s HTTP/1.1%s", arg1, newline);
   Rio_writen(clientfd, command, strlen(command)); //sends input into the server--api
   fprintf(stderr, "this is the error: ");
-  Rio_readlineb(&rio, buf, MAXLINE);  //READ FROM THE SERVER
-  //sprintf(buf, "this is the buf%s\n", buf);
 
+  
+  Rio_readlineb(&rio, buf, MAXLINE);  //READ FROM THE SERVER
+  Fputs(buf, stdout);
+  fprintf(stderr, "this is the second error: ");
+  sprintf(content, "%sthis is the buf%s\n", content,  buf);
+  //fprintf(stderr, "This is the content %s", buf);
+  //sprintf(content, "%sThis is the content %s", content, buf);
   
   printf("Connection: close\r\n");
   printf("Content-length: %d\r\n", (int)strlen(content));
