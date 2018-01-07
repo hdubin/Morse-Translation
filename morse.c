@@ -43,6 +43,7 @@ int main()
   //sprintf(content, "<p> Welcome to the morse translation website: </p>");
   //sprintf(content, "%sThanks for visiting!\r\n", content);
   sprintf(content, "%sHere is the argument you typed:%s\n", content, buf);
+  fprintf(stdout, "here is the argument you typed: %s", buf);
   /* Generate the HTTP response */
   sprintf(command, "GET /translate/morse.json?%s HTTP/1.1%s", arg1, newline);
   Rio_writen(clientfd, command, strlen(command)); //sends input into the server--api
@@ -54,10 +55,12 @@ int main()
   //int stop_string_len = strlen(stop_string);
 
   while((retval = Rio_readlineb(&rio, buff, MAXLINE)) > 0){
-    fprintf(stderr, "response: %s\n", buff);
+    //fprintf(stderr, "response: %s\n", buff);
     //sprintf(content, "<p> Welcome to the morse translation website: </p>");
-    sprintf(content, "%s<p>Here is the output: %s</p>\n", content, buff);
-    fprintf(stderr, "This is the content %s", buff);
+    //sprintf(content, "%s<p>Here is the output: %s</p>\n", content, buff);
+    //fprintf(stderr, "This is the content %s", buff);
+    fprintf(fp, "%s\n", buff);
+    fflush(stdout);
     Fputs(buff, stdout);
   }
 
@@ -68,18 +71,25 @@ int main()
   text = regcomp(&regex2, "\"text\": \"", 0);
 
   while(fgets(buff, MAXLINE, fp)){
+    //fprintf(stderr, "This is buff %s", buff);
     trans = regexec(&regex, buff, 0, NULL, 0);
     text = regexec(&regex2, buff, 0, NULL, 0);
+    //fprintf(stderr, "this is trans %d", trans);
+    //fprintf(stderr, "this is text %d", text);
 
     if (trans==0 && match ==0){
       match=1;
+      fprintf(stdout, " this is trans %s",  buff);
+      fflush(stdout);
     }
 
     else if (text==0 && match==1){
-      break;
+      match = 2;
+      fprintf(stdout, " this is text %s", buff);
+      fflush(stdout);
     }
 
-    else if (match==1){
+    else if (match==2){
       fprintf(stdout, "%s\n", buff);
       fflush(stdout);
     }
