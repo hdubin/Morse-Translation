@@ -1,4 +1,5 @@
 #include "csapp.h"
+#include <regex.h>
 
 int main() 
 {
@@ -8,6 +9,20 @@ int main()
   char *host, *port;//, *buf2 , *buf[MAXLINE];
   rio_t rio;
   char *newline = "\r\n";
+  FILE *fp;
+  fpos_t position;
+  regex_t regex;
+  regex_t regex2;
+  int trans;
+  int text;
+  int match = 0;
+
+  //open file
+  fp = fopen("file.txt", "w+");
+
+  //get position at beginnning of file
+  fgetpos(fp, &position);
+  
   /* Extract the argument of the phrase */
   if ((buf = getenv("QUERY_STRING")) != NULL) {
     strcpy(arg1, buf);
@@ -35,6 +50,9 @@ int main()
   Rio_writen(clientfd, command, strlen(command));
   //fprintf(stderr, "this is the error: ");
 
+  //char *stop_string =' ,\n"text"';
+  //int stop_string_len = strlen(stop_string);
+
   while((retval = Rio_readlineb(&rio, buff, MAXLINE)) > 0){
     fprintf(stderr, "response: %s\n", buff);
     //sprintf(content, "<p> Welcome to the morse translation website: </p>");
@@ -42,6 +60,40 @@ int main()
     fprintf(stderr, "This is the content %s", buff);
     Fputs(buff, stdout);
   }
+
+  fsetpos(fp, &position);
+
+  //parse through file
+  trans = regcomp(&regex, '"translated": "', 0);
+  text = regcomp(&regex2, '"text": "', 0);
+
+  while(fgets(buff, MAXLINE, fp)){
+    trans = regexec(&regex, buff, 0, NULL, 0);
+    text = regexec(&regex2, buff, 0, NULL, 0);
+
+    if (trans==0 && match ==0){
+      match=1;
+    }
+
+    else if (text==0 && match==1){
+      break;
+    }
+
+    else if (match==1){
+      fprintf(stdout, "%s\n", buff);
+      fflush(stdout);
+    }
+  }
+  fclose(fp);
+  
+
+  
+
+  
+  
+  
+
+  
   
 
   
