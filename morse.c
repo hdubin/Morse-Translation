@@ -61,7 +61,10 @@ int main()
     //fprintf(stderr, "This is the content %s", buff);
     fprintf(fp, "%s\n", buff);
     fflush(stdout);
-    Fputs(buff, stdout);
+
+    //****this is the line that prints everything
+    //****when commented, nothing prints out
+    //Fputs(buff, stdout);
   }
 
   fsetpos(fp, &position);
@@ -79,19 +82,23 @@ int main()
 
     if (trans==0 && match ==0){
       match=1;
+      //****this is the first line we want to be printed 
       fprintf(stdout, " this is trans %s",  buff);
+      //Fputs(buff, stdout);
       fflush(stdout);
     }
 
     else if (text==0 && match==1){
       match = 2;
+      //****this is the second line we want to be printed
       fprintf(stdout, " this is text %s", buff);
+      //Fputs(buff, stdout);
       fflush(stdout);
     }
 
     else if (match==2){
-      fprintf(stdout, "%s\n", buff);
-      fflush(stdout);
+      //fprintf(stdout, "%s\n", buff);
+      //fflush(stdout);
     }
   }
   fclose(fp);
