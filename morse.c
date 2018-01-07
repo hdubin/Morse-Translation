@@ -2,32 +2,25 @@
 
 int main() 
 {
-  char *buf;// *p;
-  char arg1[MAXLINE], content[MAXLINE]; // command[MAXLINE];
-  int clientfd;
+  char *buf, buff[MAXLINE];// *p;
+  char arg1[MAXLINE], content[MAXLINE], command[MAXLINE];
+  int clientfd, retval;
   char *host, *port;//, *buf2 , *buf[MAXLINE];
   rio_t rio;
+  char *newline = "\r\n";
   /* Extract the argument of the phrase */
   if ((buf = getenv("QUERY_STRING")) != NULL) {
     strcpy(arg1, buf);
   }
-  char *command;
-  char buff[MAXLINE];
   
   
   host = "api.funtranslations.com";
   //host = "http://api.funtranslations.com/translate/morse.json";
   port = "80";
-  sprintf(command, "GET https://api.funtranslations.com/json?%s\n", arg1);
   
   clientfd = Open_clientfd(host, port);
   Rio_readinitb(&rio, clientfd); //initialize rio library
   //get input from html page--form
-
-  Rio_writen(clientfd, command, MAXLINE);
-  Rio_readlineb(&rio, buff, MAXLINE);
-  sprintf(content, "%sConnected to api: %s", content, buff);
-  
 
 
 
@@ -36,18 +29,32 @@ int main()
   sprintf(content, "%sThanks for visiting!\r\n", content);
   sprintf(content, "%sHere is the argument you typed:%s\n", content, buf);
   /* Generate the HTTP response */
-  //  sprintf(command, "GET http://api.funtranslations.com/translate/morse.json%s", arg1);
-    // Rio_writen(clientfd, command, strlen(command)); //sends input into the server--api
-  // fprintf(stderr, "this is the error: ");
-  //Rio_readlineb(&rio, buf, MAXLINE);  //READ FROM THE SERVER
-  //sprintf(buf, "this is the buf%s\n", buf);
+  sprintf(command, "GET /translate/morse.json?%s HTTP/1.1%s", arg1, newline);
+  Rio_writen(clientfd, command, strlen(command)); //sends input into the server--api
+  sprintf(command, "Host: %s%s%s", host, newline, newline);
+  Rio_writen(clientfd, command, strlen(command));
+  //fprintf(stderr, "this is the error: ");
+
+  while((retval = Rio_readlineb(&rio, buff, MAXLINE)) > 0){
+    fprintf(stderr, "response: %s\n", buff);
+    //sprintf(content, "<p> Welcome to the morse translation website: </p>");
+    sprintf(content, "%sHere is the argument you typed: %s\n", content, buff);
+  }
+  
 
   
-  printf("Connection: close\r\n");
-  printf("Content-length: %d\r\n", (int)strlen(content));
-  printf("Content-type: text/html\r\n\r\n");
-  printf("%s", content);
-  fflush(stdout);
+  //Rio_readlineb(&rio, buf, MAXLINE);  //READ FROM THE SERVER
+  //Fputs(buf, stdout);
+  //fprintf(stderr, "this is the second error: ");
+  //sprintf(content, "%sthis is the buf%s\n", content,  buf);
+  //fprintf(stderr, "This is the content %s", buf);
+  //sprintf(content, "%sThis is the content %s", content, buf);
+  
+  //printf("Connection: close\r\n");
+  //printf("Content-length: %d\r\n", (int)strlen(content));
+  //printf("Content-type: text/html\r\n\r\n");
+  //printf("%s", content);
+  //fflush(stdout);
   
   Close(clientfd); //line:netp:echoclient:close
   exit(0);
