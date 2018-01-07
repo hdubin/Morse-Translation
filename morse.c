@@ -64,8 +64,8 @@ int main()
   fsetpos(fp, &position);
 
   //parse through file
-  trans = regcomp(&regex, '"translated": "', 0);
-  text = regcomp(&regex2, '"text": "', 0);
+  trans = regcomp(&regex, "\"translated\": \"", 0);
+  text = regcomp(&regex2, "\"text\": \"", 0);
 
   while(fgets(buff, MAXLINE, fp)){
     trans = regexec(&regex, buff, 0, NULL, 0);
