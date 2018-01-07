@@ -25,8 +25,8 @@ int main()
 
 
   /* Make the response body */
-  sprintf(content, "<p> Welcome to the morse translation website: </p>");
-  sprintf(content, "%sThanks for visiting!\r\n", content);
+  //sprintf(content, "<p> Welcome to the morse translation website: </p>");
+  //sprintf(content, "%sThanks for visiting!\r\n", content);
   sprintf(content, "%sHere is the argument you typed:%s\n", content, buf);
   /* Generate the HTTP response */
   sprintf(command, "GET /translate/morse.json?%s HTTP/1.1%s", arg1, newline);
@@ -38,7 +38,9 @@ int main()
   while((retval = Rio_readlineb(&rio, buff, MAXLINE)) > 0){
     fprintf(stderr, "response: %s\n", buff);
     //sprintf(content, "<p> Welcome to the morse translation website: </p>");
-    sprintf(content, "%sHere is the argument you typed: %s\n", content, buff);
+    sprintf(content, "%s<p>Here is the output: %s</p>\n", content, buff);
+    fprintf(stderr, "This is the content %s", buff);
+    Fputs(buff, stdout);
   }
   
 
@@ -47,7 +49,7 @@ int main()
   //Fputs(buf, stdout);
   //fprintf(stderr, "this is the second error: ");
   //sprintf(content, "%sthis is the buf%s\n", content,  buf);
-  //fprintf(stderr, "This is the content %s", buf);
+  //fprintf(stderr, "This is the content %s", buff);
   //sprintf(content, "%sThis is the content %s", content, buf);
   
   //printf("Connection: close\r\n");
