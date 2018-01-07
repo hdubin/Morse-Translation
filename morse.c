@@ -85,16 +85,7 @@ int main()
     }
   }
   fclose(fp);
-  
 
-  
-
-  
-  
-  
-
-  
-  
 
   
   //Rio_readlineb(&rio, buf, MAXLINE);  //READ FROM THE SERVER
