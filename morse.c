@@ -13,8 +13,8 @@ int main()
   fpos_t position;
   regex_t regex;
   regex_t regex2;
-  int trans;
-  int text;
+  int start;
+  int end;
   int match = 0;
 
   //open file
@@ -35,75 +35,83 @@ int main()
   
   clientfd = Open_clientfd(host, port);
   Rio_readinitb(&rio, clientfd); //initialize rio library
-  //get input from html page--form
-
-
+  
 
   /* Make the response body */
-  //sprintf(content, "<p> Welcome to the morse translation website: </p>");
-  //sprintf(content, "%sThanks for visiting!\r\n", content);
-  sprintf(content, "%sHere is the argument you typed:%s\n", content, buf);
-  fprintf(stdout, "here is the argument you typed: %s", buf);
+
   /* Generate the HTTP response */
   sprintf(command, "GET /translate/morse.json?%s HTTP/1.1%s", arg1, newline);
   Rio_writen(clientfd, command, strlen(command)); //sends input into the server--api
   sprintf(command, "Host: %s%s%s", host, newline, newline);
   Rio_writen(clientfd, command, strlen(command));
-  //fprintf(stderr, "this is the error: ");
 
-  //char *stop_string =' ,\n"text"';
-  //int stop_string_len = strlen(stop_string);
 
   while((retval = Rio_readlineb(&rio, buff, MAXLINE)) > 0){
-    //fprintf(stderr, "response: %s\n", buff);
-    //sprintf(content, "<p> Welcome to the morse translation website: </p>");
-    //sprintf(content, "%s<p>Here is the output: %s</p>\n", content, buff);
-    //fprintf(stderr, "This is the content %s", buff);
+
     fprintf(fp, "%s\n", buff);
-    fflush(stdout);
+    fflush(fp);
 
     //****this is the line that prints everything
     //****when commented, nothing prints out
+    
     //Fputs(buff, stdout);
+    //fflush(stdout);
   }
 
   fsetpos(fp, &position);
 
   //parse through file
-  trans = regcomp(&regex, "\"translated\": \"", 0);
-  text = regcomp(&regex2, "\"text\": \"", 0);
+  //start = regcomp(&regex, "\"contents:\" ", 0);
+  start = regcomp(&regex, "{", 0);
+  //check if it works. i know this is the wrong regex
+  
+  //trans = regcomp(&regex, "\"translated\": \"", 0);
+  //end = regcomp(&regex2, "\"translation\": \"", 0);
+  end = regcomp(&regex2, "}", 0);
 
   while(fgets(buff, MAXLINE, fp)){
     //fprintf(stderr, "This is buff %s", buff);
-    trans = regexec(&regex, buff, 0, NULL, 0);
-    text = regexec(&regex2, buff, 0, NULL, 0);
+    start = regexec(&regex, buff, 0, NULL, 0);
+    end = regexec(&regex2, buff, 0, NULL, 0);
     //fprintf(stderr, "this is trans %d", trans);
     //fprintf(stderr, "this is text %d", text);
 
-    if (trans==0 && match ==0){
+    if (start==0 && match == 0){
       match=1;
-      //****this is the first line we want to be printed 
-      fprintf(stdout, " this is trans %s",  buff);
+      /****this is the first line we want to be printed 
+      fprintf(stdout, "<p> This is the morse translation:  %s </p>",  buff);
+      sprintf(content, "%sThis is the translation %s", content, buff);
+      Fputs(buff, stdout);
+      fflush(stdout);
+      */
+    }
+
+    else if (end==0 && match == 1){
+      break;
+      
+      /****this is the second line we want to be printed
+      fprintf(stdout, "<p> This is text you typed %s </p>\n", buff);
+      sprintf(content, "%sThis is the text %s", content, buff);
+      Fputs(buff, stdout);
+      fflush(stdout);
+      */
+    }
+
+    else if (match == 1){
+      fprintf(stdout, "This is what we want %s\n", buff);
+      sprintf(content, "%sThis is what we want printed %s", content, buff);
       //Fputs(buff, stdout);
       fflush(stdout);
     }
-
-    else if (text==0 && match==1){
-      match = 2;
-      //****this is the second line we want to be printed
-      fprintf(stdout, " this is text %s", buff);
+    else {
+      //fprintf(stdout, "This is everything else fprintf: %s\n", buff);
+      //sprintf(content, "%sThis is everything else sprintf:  %s", content, buff);
       //Fputs(buff, stdout);
       fflush(stdout);
-    }
 
-    else if (match==2){
-      //fprintf(stdout, "%s\n", buff);
-      //fflush(stdout);
     }
   }
   fclose(fp);
-
-
   
   //Rio_readlineb(&rio, buf, MAXLINE);  //READ FROM THE SERVER
   //Fputs(buf, stdout);
@@ -120,7 +128,7 @@ int main()
   
   Close(clientfd); //line:netp:echoclient:close
   exit(0);
-  
+
 } 
   
 /* $end echoclientmain */
