@@ -61,13 +61,13 @@ int main()
   fsetpos(fp, &position);
 
   //parse through file
-  //start = regcomp(&regex, "\"contents:\" ", 0);
-  start = regcomp(&regex, "{", 0);
+  start = regcomp(&regex, "\"contents\": ", 0);
+  //start = regcomp(&regex, "{", 0);
   //check if it works. i know this is the wrong regex
   
   //trans = regcomp(&regex, "\"translated\": \"", 0);
-  //end = regcomp(&regex2, "\"translation\": \"", 0);
-  end = regcomp(&regex2, "}", 0);
+  end = regcomp(&regex2, "\"translation\": \"", 0);
+  //end = regcomp(&regex2, "}", 0);
 
   while(fgets(buff, MAXLINE, fp)){
     //fprintf(stderr, "This is buff %s", buff);
@@ -98,8 +98,8 @@ int main()
     }
 
     else if (match == 1){
-      fprintf(stdout, "This is what we want %s\n", buff);
-      sprintf(content, "%sThis is what we want printed %s", content, buff);
+      fprintf(stdout, "%s\n", buff);
+      //sprintf(content, "%sThis is what we want printed %s", content, buff);
       //Fputs(buff, stdout);
       fflush(stdout);
     }
